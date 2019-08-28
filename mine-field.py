@@ -1,28 +1,60 @@
 import random
+from drawer import Drawer
 
 
 class MineField:
     def __init__(self, rows, cols, nBombs):
         rows = rows if rows >= 4 else 4
         cols = cols if cols >= 5 else 5
-        self.field = [list(range(rows)), list(range(cols))]
+        self.board = [list(range(rows)), list(range(cols))]
         self.nBombs = nBombs if nBombs > 5 else 5
         self.bombsPositions = []
+        self.positionsCleared = []
         self.__set_bombs_positions__()
+        self.isOver = False
 
     def __set_bombs_positions__(self):
         count = 0
         while (count < self.nBombs):
-            posX = random.randint(0, len(self.field[0]))
-            posY = random.randint(0, len(self.field[1]))
-            hasBomb = False
-            for pos in self.bombsPositions:
-                hasBomb = pos[0] == posX and pos[1] == posY
-            if (hasBomb):
+            posX = random.randint(0, len(self.board[0]))
+            posY = random.randint(0, len(self.board[1]))
+            if (self.__pos_has_bomb__(posX, posY)):
                 continue
             self.bombsPositions.append([posX, posY])
             count = count + 1
 
+    def __pos_has_bomb__(self, x, y):
+        for pos in self.bombsPositions:
+            if (pos[0] == x and pos[1] == y):
+                return True
+        return False
+    def __pos_is_clear(self, x, y):
+        for pos in self.positionsCleared:
+            if (pos[0] == x and pos[1] == y):
+                return True
+        return False
+
+    def __pos__exists(self, x, y):
+        return x >= 0 and y >= 0 and x < len(self.board[0]) and y < len(self.board[1])
+
+    def selectPos(self, x, y):
+        if (not self.__pos__exists(x, y)):
+            return 'Position does not exists'
+        if (self.__pos_has_bomb__(x, y)):
+            self.isOver = True
+            return 'Game Over'
+        if (self.__pos_is_clear(x, y)):
+            return 'Position already clear'
+        self.positionsCleared.append([x,y])
+        return 'Position cleared'
+
+
 
 if __name__ == "__main__":
     mf = MineField(5,5,5)
+    dw = Drawer(mf.board)
+    while (not mf.isOver):
+        dw.draw(mf.positionsCleared)
+        x = int(input('Type in a value for the X axis: '))
+        y = int(input('Type in a value for the Y axis: '))
+        print(mf.selectPos(x,y))

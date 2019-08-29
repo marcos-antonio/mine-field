@@ -37,16 +37,67 @@ class MineField:
     def __pos__exists(self, x, y):
         return x >= 0 and y >= 0 and x < len(self.board[0]) and y < len(self.board[1])
 
-    def selectPos(self, x, y):
+    def selectPos(self, x, y, xParent = -1, yParent = - 1):
         if (not self.__pos__exists(x, y)):
             return 'Position does not exists'
         if (self.__pos_has_bomb__(x, y)):
-            self.isOver = True
-            return 'Game Over'
+            return 'Game Over, you hit a bomb'
         if (self.__pos_is_clear(x, y)):
             return 'Position already clear'
-        self.positionsCleared.append([x,y])
+        nearbyBombs = self.__get_nearby_bombs__(x,y)
+        self.positionsCleared.append([[x,y], nearbyBombs])
+        # if (nearbyBombs == 0):
+        #     self.__clear_neighbours__(x,y)
         return 'Position cleared'
+        
+
+    def __get_nearby_bombs__(self, x, y):
+        topY = y + 1
+        leftX = x - 1
+        rightX = x + 1
+        bottomY = y - 1
+        bombCount = 0
+        if (self.__pos_has_bomb__(topY, x)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(topY, leftX)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(topY, rightX)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(y, leftX)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(y, rightX)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(bottomY, leftX)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(bottomY, x)):
+            bombCount = bombCount + 1
+        if (self.__pos_has_bomb__(bottomY, rightX)):
+            bombCount = bombCount + 1
+        return bombCount
+
+    def __clear_neighbours__(self, x, y, xParent = -1, yParent = - 1):
+        topY = y + 1
+        leftX = x - 1
+        rightX = x + 1
+        bottomY = y - 1
+        bombCount = 0
+        if (not (xParent == x or yParent == topY) ):
+            self.selectPos(x, topY)
+        if (not (xParent == leftX or yParent == topY) ):
+            self.selectPos(leftX, topY)
+        if (not (xParent == rightX or yParent == topY) ):
+            self.selectPos(rightX, topY)
+        if (not (xParent == leftX or yParent == y) ):
+            self.selectPos(leftX, y) 
+        if (not (xParent == rightX or yParent == y) ):
+            self.selectPos(rightX, y)
+        if (not (xParent == leftX or yParent == bottomY) ):
+            self.selectPos(leftX, bottomY)
+        if (not (xParent == x or yParent == bottomY) ):
+            self.selectPos(x, bottomY)
+        if (not (xParent == rightX or yParent == bottomY) ):
+            self.selectPos(rightX, bottomY)
+        
 
 
 
@@ -57,4 +108,5 @@ if __name__ == "__main__":
         dw.draw(mf.positionsCleared)
         x = int(input('Type in a value for the X axis: '))
         y = int(input('Type in a value for the Y axis: '))
-        print(mf.selectPos(x,y))
+        if (print(mf.selectPos(x,y)) == 'Game Over, you hit a bomb'):
+            mf.isOver = True

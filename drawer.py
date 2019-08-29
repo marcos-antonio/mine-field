@@ -6,7 +6,10 @@ class Drawer:
     def draw(self, cleanFields):
         for y in self.board[1]:
             for x in self.board[0]:
-                ch = '  ' if [x,y] in cleanFields else '* '
+                ch = '* '
+                for f in cleanFields:
+                    if ([x,y] == f[0]):
+                        ch = str(f[1]) + ' '
                 print(ch, end='')
             print('\n')
 

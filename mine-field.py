@@ -40,16 +40,16 @@ class MineField:
 
     def selectPos(self, x, y, rec=False):
         if (not self.__pos__exists(x, y)):
-            return 'Position does not exists'
+            return 2
         if (self.__pos_has_bomb__(x, y)):
-            return 'Game Over, you hit a bomb'
+            return 3
         if (self.__pos_is_clear(x, y)):
-            return 'Position already clear'
+            return 4
         nearbyBombs = self.__get_nearby_bombs__(x, y)
         self.positionsCleared.append([[x, y], nearbyBombs])
         if (nearbyBombs == 0 and not rec):
             self.__clear_neighbours__(x, y)
-        return 'Position cleared'
+        return 1
 
     def __get_nearby_bombs__(self, x, y):
         topY = y - 1
@@ -86,5 +86,5 @@ if __name__ == "__main__":
         dw.draw(mf.positionsCleared)
         x = int(input('Type in a value for the X axis: '))
         y = int(input('Type in a value for the Y axis: '))
-        if (mf.selectPos(x, y) == 'Game Over, you hit a bomb'):
+        if (mf.selectPos(x, y) == 3):
             mf.isOver = True

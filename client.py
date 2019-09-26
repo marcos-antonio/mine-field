@@ -18,13 +18,14 @@ cleanFields = []
 def client():
     registerBoardInfo()
     drawer = Drawer([list(range(rows)), list(range(cols))])
-    threading.Thread(target=resolveServerMessages).start()
     waitForCommands()
 
 def waitForCommands():
-    drawer.draw(self, cleanFields)
-    x = str(input('Type in a value for the X axis: '))
-    y = str(input('Type in a value for the Y axis: '))
+    while True:
+        drawer.draw(self, cleanFields)
+        x = str(input('Type in a value for the X axis: '))
+        y = str(input('Type in a value for the Y axis: '))
+        selectPos(x, y)
 
 def registerBoardInfo():
     isAccepted = False
@@ -43,16 +44,14 @@ def registerBoardInfo():
         isAccepted = response[0] == '1'
         rows = uRows
         cols = uCols
-        print('Game created!')
     return None
 
 def selectPos(x, y):
-    encodedData = ('3:' + str( [message, destiny])).encode(ENCODE)
+    encodedStr = str('2:' + x + ',' + y).encode(ENCODE)
 
-    sock.sendto(encodedData, serverDest)
-
-def printUserlist():
-
-    sock.sendto('2:[]'.encode(ENCODE), serverDest)
+    sock.sendto(encodedStr, serverDest)
+    data, address = sock.recvfrom(MAX_BYTES)
+    response = data.decode(ENCODE).split(':')
+    print(response[1])
 
 client()

@@ -9,6 +9,11 @@ messageCode
 3 - game over
 4 - position already clear
 5 - game created
+6 - you won
+
+action
+1 - create game
+2 - select pos
 
 
 minefield

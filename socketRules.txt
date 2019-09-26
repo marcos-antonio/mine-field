@@ -1,0 +1,39 @@
+returnCode
+1 - ok
+2 - something went wrong
+
+messageCode
+0 - something went wrong
+1 - position cleared
+2 - position does not exists
+3 - game over
+4 - position already clear
+5 - game created
+
+
+minefield
+    public methods
+        selectPos
+    possibleCommands
+        startGame
+            parameters
+                rows
+                cols
+                nBombs
+        selectPos
+            parameters
+                x,
+                y
+            response
+
+drawer
+    public methods
+        draw
+    possible commands
+        startGame
+            parameters
+                rows
+                cols
+                nBombs
+
+

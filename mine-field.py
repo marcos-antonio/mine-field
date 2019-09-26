@@ -4,10 +4,10 @@ from drawer import Drawer
 
 class MineField:
     def __init__(self, rows, cols, nBombs):
-        rows = rows if rows >= 10 else 10
-        cols = cols if cols >= 10 else 10
+        rows = rows
+        cols = cols
+        self.nBombs = nBombs
         self.board = [list(range(rows)), list(range(cols))]
-        self.nBombs = nBombs if nBombs > 5 else 5
         self.bombsPositions = []
         self.positionsCleared = []
         self.__set_bombs_positions__()

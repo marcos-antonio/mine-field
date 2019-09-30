@@ -1,11 +1,10 @@
 import random
 from drawer import Drawer
 
-
 class MineField:
     def __init__(self, rows, cols, nBombs):
-        rows = rows
-        cols = cols
+        self.rows = rows
+        self.cols = cols
         self.nBombs = nBombs
         self.board = [list(range(rows)), list(range(cols))]
         self.bombsPositions = []
@@ -16,8 +15,8 @@ class MineField:
     def __set_bombs_positions__(self):
         count = 0
         while (count < self.nBombs):
-            posX = random.randint(0, len(self.board[0]))
-            posY = random.randint(0, len(self.board[1]))
+            posX = random.randint(0, len(self.board[0]) - 1)
+            posY = random.randint(0, len(self.board[1]) - 1)
             if (self.__pos_has_bomb__(posX, posY)):
                 continue
             self.bombsPositions.append([posX, posY])
@@ -31,7 +30,7 @@ class MineField:
 
     def __pos_is_clear(self, x, y):
         for pos in self.positionsCleared:
-            if (pos[0] == x and pos[1] == y):
+            if (pos[0][0] == x and pos[0][1] == y):
                 return True
         return False
 
@@ -73,18 +72,39 @@ class MineField:
         bombCount = 0
         for i in list(range(topY, bottomY + 1)):
             for k in list(range(leftX, rightX + 1)):
-                print('Searching for a bomb on: ', k, i)
                 if (y == i and k == x):
                     continue
                 self.selectPos(k, i, True)
 
+    def areAllPositionsCleared(self):
+        return len(self.positionsCleared) == (self.rows * self.cols) - self.nBombs
+
+
+
+def displayMessage(code):
+    if (code == 1):
+        print('Selected position was cleared')
+    elif (code == 2):
+        print('Position does not exists')
+    elif (code == 3):
+        print('You stepped on a bomb, game over')
+    elif (code == 4):
+        print('Position already clear')
+    elif (code == 6):
+        print('You won')
 
 if __name__ == "__main__":
-    mf = MineField(5, 5, 5)
+    uRows = int(input('Type in the number of rows for this game:\n'))
+    uCols = int(input('Type in the number of columns for this game:\n'))
+    nBombs = int(input('Type in the number of bombs for this game:\n'))
+    mf = MineField(uRows, uCols, nBombs)
     dw = Drawer(mf.board)
     while (not mf.isOver):
         dw.draw(mf.positionsCleared)
         x = int(input('Type in a value for the X axis: '))
         y = int(input('Type in a value for the Y axis: '))
-        if (mf.selectPos(x, y) == 3):
+        code = mf.selectPos(x, y)
+        displayMessage(code)
+        if (code in (3, 6)):
             mf.isOver = True
+            dw.draw(mf.positionsCleared)

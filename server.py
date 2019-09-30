@@ -1,6 +1,6 @@
 import socket
 from datetime import datetime
-from . import MineField
+from minefield import MineField
 
 ENCODE = "UTF-8"
 MAX_BYTES = 65535
@@ -11,7 +11,7 @@ orig = (HOST, PORT)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(orig)
 
-board
+board = None
 
 def server():
     while True:
@@ -22,13 +22,16 @@ def server():
         action = data[0]
 
         if (action == '1'):
-            rows, cols, nBombs = data[1].split(',').split()
-            board = MineField(rows, cols, nBombs)
+            rows, cols, nBombs = data[1].split(',')
+            board = MineField(int(rows), int(cols), int(nBombs))
             responseCode = '1'
             messageCode = '5'
         elif (action == '2'):
-            x, y = data[1].split(',').split()
-            messageCode = board.selectPos(x, y)
-        sock.sendto(f'{responseCode}:{messageCode}'.encode(ENCODE), address)
+            x, y = data[1].split(',')
+            messageCode = board.selectPos(int(x), int(y))
+            if (board.areAllPositionsCleared()):
+                messageCode = 6
+        print(f'bombs positions: {board.bombsPositions}')
+        sock.sendto(f'{responseCode}:{messageCode}:{board.positionsCleared}'.encode(ENCODE), address)
 
 server()

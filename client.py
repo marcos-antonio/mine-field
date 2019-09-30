@@ -3,6 +3,14 @@ import threading
 from datetime import datetime
 from drawer import Drawer
 
+class Props:
+    def __init__(self):
+        self.rows = 0
+        self.cols = 0
+        self.drawer = None
+        self.cleanFields = []
+        self.lastMessageCode = None
+
 ENCODE = "UTF-8"
 HOST = '127.0.0.1'
 PORT = 5000
@@ -10,22 +18,37 @@ MAX_BYTES = 65535
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverDest = (HOST, PORT)
 
-rows = 0
-cols = 0
-drawer = None
-cleanFields = []
+props = Props()
 
 def client():
     registerBoardInfo()
-    drawer = Drawer([list(range(rows)), list(range(cols))])
+    print(props.rows)
+    props.drawer = Drawer([list(range(int(props.rows))), list(range(int(props.cols)))])
     waitForCommands()
 
 def waitForCommands():
-    while True:
-        drawer.draw(self, cleanFields)
+    while props.lastMessageCode != 3 and props.lastMessageCode != 6:
+        displayMessage()
+        props.drawer.draw(props.cleanFields)
         x = str(input('Type in a value for the X axis: '))
         y = str(input('Type in a value for the Y axis: '))
         selectPos(x, y)
+
+    displayMessage();
+    props.drawer.draw(props.cleanFields)
+
+def displayMessage():
+    if (props.lastMessageCode == 1):
+        print('Selected position was cleared')
+    elif (props.lastMessageCode == 2):
+        print('Position does not exists')
+    elif (props.lastMessageCode == 3):
+        print('You stepped on a bomb, game over')
+    elif (props.lastMessageCode == 4):
+        print('Position already clear')
+    elif (props.lastMessageCode == 6):
+        print('You won')
+
 
 def registerBoardInfo():
     isAccepted = False
@@ -42,8 +65,8 @@ def registerBoardInfo():
         response = data.decode(ENCODE).split(':')
 
         isAccepted = response[0] == '1'
-        rows = uRows
-        cols = uCols
+        props.rows = uRows
+        props.cols = uCols
     return None
 
 def selectPos(x, y):
@@ -52,6 +75,7 @@ def selectPos(x, y):
     sock.sendto(encodedStr, serverDest)
     data, address = sock.recvfrom(MAX_BYTES)
     response = data.decode(ENCODE).split(':')
-    print(response[1])
+    props.cleanFields = eval(response[2])
+    props.lastMessageCode = int(response[1])
 
 client()

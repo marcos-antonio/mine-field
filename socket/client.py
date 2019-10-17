@@ -67,7 +67,6 @@ def registerBoardInfo():
         isAccepted = response[0] == '1'
         props.rows = uRows
         props.cols = uCols
-    return None
 
 def selectPos(x, y):
     encodedStr = str('2:' + x + ',' + y).encode(ENCODE)

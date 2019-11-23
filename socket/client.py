@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(1, '../')
 import socket
 import threading
 from datetime import datetime
@@ -22,7 +24,6 @@ props = Props()
 
 def client():
     registerBoardInfo()
-    print(props.rows)
     props.drawer = Drawer([list(range(int(props.rows))), list(range(int(props.cols)))])
     waitForCommands()
 
